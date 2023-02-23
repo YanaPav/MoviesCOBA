@@ -1,47 +1,62 @@
-import React, {useState} from 'react';
-import { render } from 'react-dom';
-import Header from './components/header/index';
-import MovieList from './components/movieList/index'
-import Menu from './components/menu/index'
-import tabList from './genre.js';
-import { BrowserRouter, Routes,Route } from 'react-router-dom';
-import { MovieCartContext } from './context';
-import './style.css';
+import React, { useState, useEffect } from "react";
+import { render } from "react-dom";
+import Header from "./components/header/index";
+import MovieList from "./components/movieList/index";
+import Menu from "./components/menu/index";
+import tabList from "./genre.js";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { MovieCartContext } from "./context";
+import "./style.css";
 
-
+const CHACKED_MOVIES_KEY = "checked movies";
 
 const App = () => {
-  const [movieCart, setMovieCart] = useState([]);
-  const [activeTab, setActiveTab] = useState(1);
+  const [movieCart, setMovieCart] = useState(() => {
+    try {
+      const checkedMovies = localStorage.getItem(CHACKED_MOVIES_KEY);
+      return JSON.parse(checkedMovies) || [];
+    } catch (error) {
+      return [];
+    }
+  });
 
-  const handleTabChange = (id) =>{
-    setActiveTab(id);
-  }
+  useEffect(() => {
+    localStorage.setItem(CHACKED_MOVIES_KEY, JSON.stringify(movieCart));
+  }, [movieCart]);
 
-  const setCart= (item) => {
-    if(item.isSelect){
-      const result = [...movieCart,item];
+  const setCart = (item) => {
+    if (item.isSelect) {
+      const result = [...movieCart, item];
+      setMovieCart(result);
+    } else {
+      const result = movieCart.filter(
+        (movie) => movie.imdbId !== item.imdbId && movie.title !== item.title
+      );
       setMovieCart(result);
     }
-    else {
-      const result = movieCart.filter(movie => movie.id !=item.id && movie.genre==item.genre);
-      setMovieCart(result);
-    }
-  }
-  
-  return(
+  };
+
+  return (
     <MovieCartContext.Provider value={{ movieCart, setCart }}>
-      <Header count={movieCart?movieCart.length:0}/>
+      <Header count={movieCart ? movieCart.length : 0} />
       <BrowserRouter>
-        <Menu tabList={tabList} activeTab={activeTab} onTabChange={handleTabChange}/>
-        <Routes>        
-          {
-            tabList.map(({tabName, id}) =><Route key={"link_"+id} path={id==1?"/":'/'+tabName} element={<MovieList genre={tabName} />}/>)
-          }
+        <Menu tabList={tabList} />
+        <Routes>
+          <Route
+            path="/"
+            element={<Navigate to={"/" + tabList[0].tabName} />}
+          />
+          {tabList.map(({ tabName, id }) => (
+            <Route
+              key={"link_" + id}
+              path={"/" + tabName}
+              element={<MovieList genre={tabName} />}
+            />
+          ))}
         </Routes>
       </BrowserRouter>
     </MovieCartContext.Provider>
-  )
+  );
 };
 
-render(<App />, document.querySelector('#app'));
+render(<App />, document.querySelector("#app"));

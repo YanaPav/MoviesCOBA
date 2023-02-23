@@ -1,22 +1,17 @@
-import React from 'react';
-import {Link} from 'react-router-dom'
-import './style.css';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import "./style.css";
 
-
-const Menu = ({tabList, activeTab, onTabChange}) => {
-	return (
-		<div className='tabs'>			
-			{tabList.map(({tabName, id}) =>
-				<Link key={"link_"+id} to={id==1?"/":'/'+tabName}>
-					<button
-					className={`tab ${activeTab === id ? 'active' : ''}`}
-					onClick={() => { onTabChange(id); }}
-					key={tabName}
-					>{tabName}</button>
-				</Link>		
-			)}
-		</div>
-	);
-}
+const Menu = ({ tabList }) => {
+  return (
+    <div className="tabs">
+      {tabList.map(({ tabName, id }) => (
+        <NavLink className="tab" key={"link_" + id} to={"/" + tabName}>
+          {tabName}
+        </NavLink>
+      ))}
+    </div>
+  );
+};
 
 export default Menu;

@@ -4,11 +4,11 @@
 }
 h1.header--title{
   text-align: center;
-  width: 90%;
+  width: 100%;
 }
 .logo {
-    display: inline-block;
-    width: auto;
-    height: 1em;
-    margin-right: 0.3em;
+  display: inline-block;
+  width: auto;
+  height: 1em;
+  margin-right: 0.3em;
   }
